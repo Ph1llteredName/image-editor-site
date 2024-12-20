@@ -10,8 +10,29 @@
     <h1>Welcome to Simple Image Editor</h1>
     <p>Upload an image to start editing!</p>
     <input type="file" id="inputImage" accept="image/*">
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <div class="canvas-container">
+        <canvas id="canvas" width="500" height="500"></canvas>
+    </div>
 </body>
+
+<style>
+    .canvas-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+    }
+</style>
+
 </html>
 <script>
     document.getElementById('inputImage').addEventListener('change', function (e) {
@@ -21,7 +42,22 @@
         reader.onload = function () {
             const canvas = new fabric.Canvas('canvas');
             fabric.Image.fromURL(reader.result, function (img) {
-                canvas.add(img.set({ left: 0, top: 0 }));
+                img.scaleToWidth(canvas.width);
+                canvas.add(img);
+                canvas.centerObject(img);
+                img.setCoords();
+
+                // Add zoom functionality
+                canvas.on('mouse:wheel', function (opt) {
+                    const delta = opt.e.deltaY;
+                    let zoom = canvas.getZoom();
+                    zoom *= 0.999 ** delta;
+                    if (zoom > 20) zoom = 20;
+                    if (zoom < 0.01) zoom = 0.01;
+                    canvas.setZoom(zoom);
+                    opt.e.preventDefault();
+                    opt.e.stopPropagation();
+                });
             });
         };
 
