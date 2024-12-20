@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Image Editor</title>
@@ -8,6 +9,22 @@
 <body>
     <h1>Welcome to Simple Image Editor</h1>
     <p>Upload an image to start editing!</p>
-    <!-- More content will go here -->
+    <input type="file" id="inputImage" accept="image/*">
+    <canvas id="canvas" width="500" height="500"></canvas>
 </body>
 </html>
+<script>
+    document.getElementById('inputImage').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            const canvas = new fabric.Canvas('canvas');
+            fabric.Image.fromURL(reader.result, function (img) {
+                canvas.add(img.set({ left: 0, top: 0 }));
+            });
+        };
+
+        reader.readAsDataURL(file);
+    });
+</script>
