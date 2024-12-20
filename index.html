@@ -10,21 +10,37 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            border: 1px solid #000;
+            position: relative;
         }
 
         body {
             margin: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
+        }
+
+        .controls {
+            margin-bottom: 10px;
+        }
+
+        canvas {
+            border: 5px solid #000;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
 </head>
 <body>
     <input type="file" id="inputImage" accept="image/*">
+    <div class="controls">
+        <label for="borderSize">Border Size:</label>
+        <input type="range" id="borderSize" min="1" max="20" value="1">
+        <label for="borderColor">Border Color:</label>
+        <input type="color" id="borderColor" value="#000000">
+    </div>
     <div class="canvas-container">
         <canvas id="canvas" width="500" height="500"></canvas>
     </div>
@@ -57,6 +73,18 @@
             };
 
             reader.readAsDataURL(file);
+        });
+
+        // Event listener for border size
+        document.getElementById('borderSize').addEventListener('input', function () {
+            const borderWidth = this.value;
+            document.querySelector('canvas').style.borderWidth = `${borderWidth}px`;
+        });
+
+        // Event listener for border color
+        document.getElementById('borderColor').addEventListener('input', function () {
+            const borderColor = this.value;
+            document.querySelector('canvas').style.borderColor = borderColor;
         });
     </script>
 </body>
