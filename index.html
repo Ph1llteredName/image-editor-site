@@ -1,66 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script  src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Image Editor</title>
+    <style>
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
 </head>
 <body>
-    <h1>Welcome to Simple Image Editor</h1>
-    <p>Upload an image to start editing!</p>
     <input type="file" id="inputImage" accept="image/*">
     <div class="canvas-container">
         <canvas id="canvas" width="500" height="500"></canvas>
     </div>
-</body>
+    <script>
+        document.getElementById('inputImage').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
 
-<style>
-    .canvas-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+            reader.onload = function () {
+                const canvas = new fabric.Canvas('canvas');
+                fabric.Image.fromURL(reader.result, function (img) {
+                    img.scaleToWidth(canvas.width);
+                    canvas.add(img);
+                    canvas.centerObject(img);
+                    img.setCoords();
 
-    body {
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f0f0f0;
-    }
-</style>
-
-</html>
-<script>
-    document.getElementById('inputImage').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function () {
-            const canvas = new fabric.Canvas('canvas');
-            fabric.Image.fromURL(reader.result, function (img) {
-                img.scaleToWidth(canvas.width);
-                canvas.add(img);
-                canvas.centerObject(img);
-                img.setCoords();
-
-                // Add zoom functionality
-                canvas.on('mouse:wheel', function (opt) {
-                    const delta = opt.e.deltaY;
-                    let zoom = canvas.getZoom();
-                    zoom *= 0.999 ** delta;
-                    if (zoom > 20) zoom = 20;
-                    if (zoom < 0.01) zoom = 0.01;
-                    canvas.setZoom(zoom);
-                    opt.e.preventDefault();
-                    opt.e.stopPropagation();
+                    // Add zoom functionality around mouse position
+                    canvas.on('mouse:wheel', function (opt) {
+                        const delta = opt.e.deltaY;
+                        let zoom = canvas.getZoom();
+                        zoom *= 0.999 ** delta;
+                        if (zoom > 20) zoom = 20;
+                        if (zoom < 0.01) zoom = 0.01;
+                        const point = new fabric.Point(opt.e.offsetX, opt.e.offsetY);
+                        canvas.zoomToPoint(point, zoom);
+                        opt.e.preventDefault();
+                        opt.e.stopPropagation();
+                    });
                 });
-            });
-        };
+            };
 
-        reader.readAsDataURL(file);
-    });
-</script>
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
